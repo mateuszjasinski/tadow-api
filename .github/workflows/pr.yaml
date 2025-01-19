@@ -3,8 +3,6 @@ env:
 
 on:
   pull_request:
-    types:
-      - opened
     branches:
       - main
       - develop
