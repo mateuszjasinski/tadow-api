@@ -15,7 +15,7 @@ class BaseURLDispatcher(ABC):
         raise NotImplementedError
 
 
-class RegexURLDispatcher:
+class RegexURLDispatcher(BaseURLDispatcher):
     def __call__(
         self, registered_routes: dict[str, APIRoute], request: HTTPRequest
     ) -> tuple[APIRoute, dict[Any]] | None:
