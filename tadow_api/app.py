@@ -1,3 +1,4 @@
+from asyncio import iscoroutinefunction
 from typing import Type, Callable
 
 from pydantic import ValidationError
@@ -31,6 +32,23 @@ class TadowAPI(Router):
 
         if app_config:
             set_default_config(config=app_config)
+
+    def exception_handler(
+        self, exception_class: Type[Exception], override: bool = False
+    ):
+        """
+        Register custom exception handler.
+        :param exception_class: Type of exception
+        :param override: Override already configured handler for exception type
+        """
+
+        def decorator(handler: Callable):
+            if exception_class in self._custom_exception_handlers and not override:
+                raise ValueError(f"Custom handler for {exception_class} already set")
+            self._custom_exception_handlers[exception_class] = handler
+            return handler
+
+        return decorator
 
     def register_router(self, router: Router) -> None:
         """
@@ -97,5 +115,13 @@ class TadowAPI(Router):
             return await route(request, *args, **kwargs)
         except Exception as exc:
             if type(exc) in self._custom_exception_handlers:
-                return await self._custom_exception_handlers[type(exc)](exc, request)
+                # Check if function is sync or async
+                handler = self._custom_exception_handlers[type(exc)]
+                if iscoroutinefunction(handler):
+                    function_response = await handler(exc, request, *args, **kwargs)
+                else:
+                    function_response = handler(exc, request, *args, **kwargs)
+                return HTTPResponse.create_response(
+                    request=request, validation_model=None, *function_response
+                )
             raise exc
