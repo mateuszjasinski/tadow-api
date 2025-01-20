@@ -19,6 +19,12 @@ pip install tadow_api[xml]  #TODO
 
 ## Features
 
+- [Validation](#validation)
+- [Router](#router)
+- [Cookies](#cookies)
+- [Config](#config-file)
+- [Exception handler](#custom-exception-handler)
+
 ### Sample app
 
 
@@ -136,29 +142,45 @@ def index(request):
 
 ### Config file
 
+Similar to other frameworks, you can manage your application configuration by creating a Config (Settings) instance.
+
+By default, the Config class configures the following fields:
+
+- `debug` – Enables the debugger and includes traceback details in the HttpResponse.
+- `default_content_type` – Configures the default content type when it is not included in the request.
+- `default_encoding` – Sets the default encoding for request and response content.
+
+[!NOTE] You can add custom fields to the configuration, making them easily accessible across your entire codebase.
+
 ```python
+# main.py
 from tadow_api import TadowAPI, Config
+from tadow_api.config import app_config
 
 app = TadowAPI(
-    app_config=Config(
+    config=Config(
         debug=True,
         example_api_key="SECRET"
     )
 )
 
 
+@app.route("/")
+def index():
+    return {"example_api_key": app_config().example_api_key}
 ```
+
 
 ### Custom exception handler
 TadowAPI supports the creation of custom exception handlers.
 
-Using the @app.exception_handler decorator, you can define custom behavior whenever your application raises a specific exception, such as a KeyError or a custom exception of your own.
+Using the `@app.exception_handler` decorator, you can define custom behavior whenever your application raises a specific exception, such as a `KeyError` or a custom exception of your own.
 
 Handlers can be implemented in the same way as regular endpoints, providing full access to the HttpRequest object and any other parameters passed to the endpoint.
 
-By default, the application configures an http_exception_handler to handle HttpException instances raised by the internal library code. You can override this behavior by including the override=True flag in the decorator's parameters.
+[!NOTE] The application configures an http_exception_handler to handle HttpException instances raised by the internal library code. You can override this behavior by including the `override=True` flag in the decorator's parameters.
 
-Note: By default, the application allows only one handler to be registered for each exception type.
+[!NOTE] The application allows only one handler to be registered for each exception type.
 
 Example:
 ```python
@@ -175,3 +197,10 @@ def sync_exception_handler(exception: KeyError, request: "HttpRequest"):
     # ... Sync handler code ...
 
 ```
+
+
+## Coming soon
+
+- Dev command with hot reload
+- Class based views
+- Test client

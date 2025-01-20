@@ -2,7 +2,7 @@ from typing import Any, TYPE_CHECKING, Type
 
 from pydantic import BaseModel
 
-from tadow_api.config import get_default_config
+from tadow_api.config import app_config
 from tadow_api.content_parsers import ContentParser
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ class HTTPResponse:
     ):
         self.status_code = status_code
         self.raw_data = raw_data
-        self.content_type = content_type or get_default_config().default_content_type
+        self.content_type = content_type or app_config().default_content_type
         self.headers = headers
 
     async def send_response(self, send):

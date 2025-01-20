@@ -1,4 +1,5 @@
-from tadow_api.config import Config, set_default_config, get_default_config
+from tadow_api.config import Config, app_config
+from tadow_api import TadowAPI
 
 
 def test_config():
@@ -13,8 +14,5 @@ def test_config():
 
 
 def test_setting_config():
-    default_config = get_default_config()
-    assert default_config.debug is False
-
-    set_default_config(Config(debug=True))
-    assert get_default_config().debug
+    TadowAPI(config=Config(debug=True))
+    assert app_config().debug

@@ -3,7 +3,7 @@ from typing import Type, Callable
 
 from pydantic import ValidationError
 
-from tadow_api.config import Config, set_default_config, get_default_config
+from tadow_api.config import Config, set_default_config, app_config
 from tadow_api.exceptions import HttpException, handle_validation_error
 from tadow_api.middleware import BaseMiddleware
 from tadow_api.requests import HTTPRequest
@@ -21,7 +21,7 @@ class TadowAPI(Router):
         url_dispatcher: BaseURLDispatcher = RegexURLDispatcher(),
         middlewares: list[BaseMiddleware] | None = None,
         prefix: str | None = None,
-        app_config: Config | None = None,
+        config: Config | None = None,
     ):
         super().__init__(prefix)
         self._url_dispatched = url_dispatcher
@@ -30,8 +30,8 @@ class TadowAPI(Router):
         if not middlewares:
             self._middlewares = []
 
-        if app_config:
-            set_default_config(config=app_config)
+        if config:
+            set_default_config(config=config)
 
     def exception_handler(
         self, exception_class: Type[Exception], override: bool = False
@@ -92,7 +92,7 @@ class TadowAPI(Router):
                     middleware.handle_response(response)
                 await response.send_response(send)
             except Exception as exc:
-                if get_default_config().debug:
+                if app_config().debug:
                     import traceback
 
                     error_content = traceback.format_exc()
