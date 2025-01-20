@@ -93,12 +93,15 @@ class Router:
             response_model=response_model,
         )
 
-    def endpoint(
+    def route(
         self,
         path: str,
         methods: list[str] | None = None,
         request_model: BaseModel | Type[BaseModel] | None = None,
-        response_model: BaseModel | Type[BaseModel] | None = None,
+        response_model: Type[list[BaseModel]]
+        | BaseModel
+        | Type[BaseModel]
+        | None = None,
     ):
         def decorator(endpoint_func):
             if (

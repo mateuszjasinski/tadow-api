@@ -16,7 +16,7 @@ class BaseParser(ABC):
 
     @classmethod
     @abstractmethod
-    def parse_response_data(cls, raw_data):  # TODO Confirm typing
+    def parse_response_data(cls, raw_data: dict) -> bytes:
         pass
 
 
@@ -30,6 +30,7 @@ class ContentParser:
                 cls._registered_parser = {}
 
             cls._registered_parser[content_type] = obj
+            return obj
 
         return decorator
 
